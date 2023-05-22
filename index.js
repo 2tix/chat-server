@@ -1,5 +1,6 @@
-const { createServer } = require("http");
 const { Server } = require("socket.io");
+const app = require("express")();
+const cors = require("cors");
 
 const port = process.env.PORT || 3000;
 // process.env.PORT is for Heroku and in general for the deployment environment, 3000 is for local development (we will have to specify the port in the URL)
@@ -28,10 +29,11 @@ const nouns = ["Giraffe", "Falcon", "Phoenix", "Tiger", "Dragon", "Wolf", "Lion"
 let coolNames = generateCoolNames(adjectives, nouns);
 // all with the coolNames is just to give a random name to the user (we could do it with IDs, but this is more fun)
 
-const httpServer = createServer();
-const io = new Server(httpServer, {
+app.use(cors());
+
+const io = new Server(app, {
     cors: {
-        origin: "*", // this is just to allow all origins
+        origin: "*", // also cors
         methods: ["GET", "POST"], // Specify the allowed HTTP methods
     },
 });
@@ -65,6 +67,6 @@ io.on('connection', socket => {
         // we send the updated messages to all the clients (io.emit sends to all the clients, socket.emit sends to the client that sent the message)
     });
 });
-httpServer.listen(port);
+app.listen(port);
 console.log(`Server up and running on ${port}`);
 // we pass the port to the listen method of the http server on which the socket.io is running
