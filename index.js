@@ -1,5 +1,6 @@
 const { Server } = require("socket.io");
 const app = require("express")();
+const server = require('http').createServer(app);
 const cors = require("cors");
 
 const port = process.env.PORT || 3000;
@@ -31,7 +32,7 @@ let coolNames = generateCoolNames(adjectives, nouns);
 
 app.use(cors());
 
-const io = new Server(app, {
+const io = new Server(server, {
     cors: {
         origin: "*", // also cors
         methods: ["GET", "POST"], // Specify the allowed HTTP methods
@@ -67,6 +68,6 @@ io.on('connection', socket => {
         // we send the updated messages to all the clients (io.emit sends to all the clients, socket.emit sends to the client that sent the message)
     });
 });
-app.listen(port);
+server.listen(port);
 console.log(`Server up and running on ${port}`);
 // we pass the port to the listen method of the http server on which the socket.io is running
